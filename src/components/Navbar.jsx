@@ -2,19 +2,19 @@ import { NavLink } from 'react-router-dom';
 
 const styles = {
   navbar: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'black',
     padding: '1rem',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
     marginBottom: '2rem',
     borderRadius: '0.5rem',
-    marginRight: '6rem',
-    width: '880px',
+    marginRight: '0rem',
+    width: '866px',
   },
   navContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    maxWidth: '1200px',
+    maxWidth: '900px',
     margin: '0 auto',
     paddingRight: '6rem',
   },
@@ -44,15 +44,42 @@ const styles = {
   activeLink: {
     backgroundColor: '#4f46e5',
     color: 'white',
-  }
+  },
+  donImage: {
+    width: '50px',
+    height: '50px',
+    marginLeft: '1rem',
+    borderRadius: '50%',
+    marginRight: '1rem',
+  },
+  donText: {
+    fontSize: '0.7rem',
+    color: 'white',
+    marginLeft: '0.3rem',
+    fontWeight: 'italic',
+    fontFamily: 'Roboto',
+  },
+  changaText: {
+    fontSize: '0.7rem',
+    color: 'red',
+    fontWeight: 'italic',
+    fontFamily: 'Roboto',
+  },
+  pangaText: {
+    fontSize: '0.7rem',
+    color: 'red',
+    fontWeight: 'italic',
+    fontFamily: 'Roboto',
+  },
 };
 
 const Navbar = () => {
   return (
     <nav style={styles.navbar}>
       <div style={styles.navContainer}>
+        <img src="/don.png" alt="Don OTP" style={styles.donImage} />
         <NavLink to="/" style={styles.logo}>
-         Don OTP System <span style={{fontSize: '0.8rem', color: '#4b5563'}}>Shiddat se bheja gaya, Don ka code.</span>
+         Don OTP  <span style={styles.donText}>Don se <span style={styles.pangaText}>Panga</span> ❌ = <span style={styles.changaText}>Maut ko Seti </span> <span style={{fontSize: '1rem'}}> ✅</span> . <span style={{fontSize: '2rem'}}>😮‍💨⚰️</span></span>
         </NavLink>
         <div style={styles.navLinks}>
           <NavLink 
