@@ -1,9 +1,11 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import UserPage from './pages/UserPage';
 import AdminPage from './pages/AdminPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import UserAnalyticsPage from './pages/UserAnalyticsPage';
+import LoginForm from './components/LoginForm';
 
 // Add keyframes animations
 const keyframes = `
@@ -116,7 +118,45 @@ const styles = {
   },
 };
 
+// Protected route component
+const ProtectedRoute = ({ element, isAdmin, isAuthenticated }) => {
+  // If admin route and user is not admin, redirect to home
+  if (isAdmin) {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (!userData.role || userData.role !== 'admin') {
+      return <Navigate to="/" />;
+    }
+  }
+  
+  // If not authenticated, redirect to login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  return element;
+};
+
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userData, setUserData] = useState(null);
+  
+  // Check if user is logged in on component mount
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('userData');
+    const token = localStorage.getItem('userToken');
+    
+    if (storedUserData && token) {
+      setUserData(JSON.parse(storedUserData));
+      setIsAuthenticated(true);
+    }
+  }, []);
+  
+  // Handle login success
+  const handleLoginSuccess = (data) => {
+    setUserData(data);
+    setIsAuthenticated(true);
+  };
+
   // Add style tag with keyframes to the document head on component mount
   useEffect(() => {
     const styleTag = document.createElement('style');
@@ -132,12 +172,41 @@ function App() {
     <BrowserRouter>
       <div style={styles.appContainer}>
         <div style={styles.cardContainer}>
-          <Navbar />
+          {isAuthenticated && <Navbar isAdmin={userData?.role === 'admin'} />}
           
           <Routes>
-            <Route path="/" element={<UserPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/login" element={
+              isAuthenticated ? <Navigate to="/" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />
+            } />
+            <Route path="/" element={
+              <ProtectedRoute 
+                element={<UserPage />} 
+                isAuthenticated={isAuthenticated} 
+                isAdmin={false} 
+              />
+            } />
+            <Route path="/user-analytics" element={
+              <ProtectedRoute 
+                element={<UserAnalyticsPage />} 
+                isAuthenticated={isAuthenticated} 
+                isAdmin={false} 
+              />
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute 
+                element={<AdminPage />} 
+                isAuthenticated={isAuthenticated} 
+                isAdmin={true} 
+              />
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute 
+                element={<AnalyticsPage />} 
+                isAuthenticated={isAuthenticated} 
+                isAdmin={true} 
+              />
+            } />
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
           </Routes>
         </div>
       </div>

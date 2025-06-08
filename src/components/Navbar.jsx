@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { logout } from '../services/api';
 
 const styles = {
   navbar: {
@@ -71,9 +72,28 @@ const styles = {
     fontWeight: 'italic',
     fontFamily: 'Roboto',
   },
+  logoutButton: {
+    padding: '0.5rem 1rem',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    borderRadius: '0.5rem',
+    cursor: 'pointer',
+    backgroundColor: '#ef4444',
+    color: 'white',
+    border: 'none',
+    marginLeft: '1rem',
+  }
 };
 
-const Navbar = () => {
+const Navbar = ({ isAdmin }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    window.location.reload(); // Force reload to clear state
+  };
+
   return (
     <nav style={styles.navbar}>
       <div style={styles.navContainer}>
@@ -92,24 +112,46 @@ const Navbar = () => {
           >
             User
           </NavLink>
+          
           <NavLink 
-            to="/admin" 
+            to="/user-analytics" 
             style={({ isActive }) => ({
               ...styles.navLink,
               ...(isActive ? styles.activeLink : {})
             })}
           >
-            Admin
+            My Analytics
           </NavLink>
-          <NavLink 
-            to="/analytics" 
-            style={({ isActive }) => ({
-              ...styles.navLink,
-              ...(isActive ? styles.activeLink : {})
-            })}
+          
+          {isAdmin && (
+            <>
+              <NavLink 
+                to="/admin" 
+                style={({ isActive }) => ({
+                  ...styles.navLink,
+                  ...(isActive ? styles.activeLink : {})
+                })}
+              >
+                Admin
+              </NavLink>
+              <NavLink 
+                to="/analytics" 
+                style={({ isActive }) => ({
+                  ...styles.navLink,
+                  ...(isActive ? styles.activeLink : {})
+                })}
+              >
+                Analytics
+              </NavLink>
+            </>
+          )}
+          
+          <button 
+            style={styles.logoutButton}
+            onClick={handleLogout}
           >
-            Analytics
-          </NavLink>
+            Logout
+          </button>
         </div>
       </div>
     </nav>
