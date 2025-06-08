@@ -99,7 +99,7 @@ const Navbar = ({ isAdmin }) => {
       <div style={styles.navContainer}>
         <img src="/don.png" alt="Don OTP" style={styles.donImage} />
         <NavLink to="/" style={styles.logo}>
-         Don OTP  <span style={styles.donText}>Don se <span style={styles.pangaText}>Panga</span> ❌ = <span style={styles.changaText}>Maut ko Seti </span> <span style={{fontSize: '1rem'}}> ✅</span> . <span style={{fontSize: '2rem'}}>😮‍💨⚰️</span></span>
+         OTP System
         </NavLink>
         <div style={styles.navLinks}>
           <NavLink 
