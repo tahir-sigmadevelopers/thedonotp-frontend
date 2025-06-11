@@ -1,6 +1,39 @@
 import { useState, useEffect, useRef } from 'react';
 import { verifyOTP, sendOTP } from '../services/api';
 
+// Add responsive styles
+const responsiveStyles = `
+  @media (max-width: 640px) {
+    .otp-card {
+      padding: 1.5rem 1rem !important;
+      border-radius: 0.5rem !important;
+    }
+    .otp-title {
+      font-size: 1.25rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+    .otp-subtitle {
+      font-size: 0.75rem !important;
+    }
+    .otp-container {
+      gap: 0.3rem !important;
+    }
+    .otp-input {
+      width: 2.5rem !important;
+      height: 2.5rem !important;
+      font-size: 1rem !important;
+    }
+    .otp-btn {
+      padding: 0.6rem !important;
+      font-size: 0.8rem !important;
+    }
+    .otp-btn-link {
+      padding: 0.4rem !important;
+      font-size: 0.75rem !important;
+    }
+  }
+`;
+
 // Define styles object for inline styling
 const styles = {
   card: {
@@ -10,6 +43,7 @@ const styles = {
     padding: '2rem',
     width: '100%',
     animation: 'fadeIn 0.5s ease-out',
+    boxSizing: 'border-box',
   },
   title: {
     fontSize: '1.5rem',
@@ -46,6 +80,7 @@ const styles = {
   inputGroup: {
     marginBottom: '1.5rem',
     position: 'relative',
+    width: '100%',
   },
   label: {
     display: 'block',
@@ -59,6 +94,7 @@ const styles = {
     gap: '0.5rem',
     justifyContent: 'space-between',
     marginBottom: '1.5rem',
+    width: '100%',
   },
   otpInput: {
     width: '3rem',
@@ -69,11 +105,13 @@ const styles = {
     border: '1px solid #e5e7eb',
     borderRadius: '0.5rem',
     backgroundColor: '#ffffff',
+    boxSizing: 'border-box',
   },
   btnGroupVertical: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.75rem',
+    width: '100%',
   },
   btn: {
     display: 'block',
@@ -86,6 +124,7 @@ const styles = {
     borderRadius: '0.5rem',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    boxSizing: 'border-box',
   },
   btnPrimary: {
     backgroundColor: '#4f46e5',
@@ -124,6 +163,17 @@ const OtpForm = ({ phoneNumber, onVerificationSuccess, onBackToPhone }) => {
   const [success, setSuccess] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10); // 10 seconds countdown
   const inputRefs = useRef([]);
+
+  // Add style tag with responsive styles
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = responsiveStyles;
+    document.head.appendChild(styleTag);
+    
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
 
   useEffect(() => {
     // Focus the first input when component mounts
@@ -240,56 +290,43 @@ const OtpForm = ({ phoneNumber, onVerificationSuccess, onBackToPhone }) => {
   };
 
   return (
-    <div style={styles.card}>
-      <h2 style={styles.title}>Enter Verification Code</h2>
+    <div style={styles.card} className="otp-card">
+      <h2 style={styles.title} className="otp-title">Enter Verification Code</h2>
       
-      <p style={styles.subtitle}>
+      <p style={styles.subtitle} className="otp-subtitle">
         We've sent a 6-digit code to <span style={styles.strong}>{phoneNumber}</span>
       </p>
       
-      <p style={styles.subtitle}>
-        {timeLeft > 0 ? (
-          <>Code expires in <span style={styles.strong}>{formatTime(timeLeft)}</span></>
-        ) : (
-          <>Code expired. Please request a new one.</>
-        )}
+      <p style={styles.subtitle} className="otp-subtitle">
+        Time remaining: {formatTime(timeLeft)}
       </p>
       
-      {error && (
+      {(error || success) && (
         <div style={{
           ...styles.alert,
-          ...(error.includes('success') ? styles.alertSuccess : styles.alertError)
+          ...(success || error.includes('success') ? styles.alertSuccess : styles.alertError)
         }}>
-          {error}
+          {success ? 'Verification successful!' : error}
         </div>
       )}
       
-      {success && (
-        <div style={{...styles.alert, ...styles.alertSuccess}}>
-          Phone number verified successfully!
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} onPaste={handlePaste}>
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>
-            Verification Code
-          </label>
-          <div style={styles.otpContainer}>
-            {otp.map((digit, idx) => (
-              <input
-                key={idx}
-                ref={(el) => (inputRefs.current[idx] = el)}
-                type="text"
-                maxLength="1"
-                style={styles.otpInput}
-                value={digit}
-                onChange={(e) => handleChange(idx, e)}
-                onKeyDown={(e) => handleKeyDown(idx, e)}
-                disabled={loading || success}
-              />
-            ))}
-          </div>
+      <form onSubmit={handleSubmit}>
+        <div style={styles.otpContainer} className="otp-container">
+          {[0, 1, 2, 3, 4, 5].map((index) => (
+            <input
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              type="text"
+              maxLength="1"
+              style={styles.otpInput}
+              className="otp-input"
+              value={otp[index]}
+              onChange={(e) => handleChange(index, e)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              onPaste={index === 0 ? handlePaste : undefined}
+              disabled={loading || success}
+            />
+          ))}
         </div>
         
         <div style={styles.btnGroupVertical}>
@@ -298,16 +335,17 @@ const OtpForm = ({ phoneNumber, onVerificationSuccess, onBackToPhone }) => {
             style={{
               ...styles.btn,
               ...styles.btnPrimary,
-              ...(loading || success || otp.join('').length !== 6 ? styles.disabled : {})
+              ...(loading || success ? styles.disabled : {})
             }}
-            disabled={loading || success || otp.join('').length !== 6}
+            className="otp-btn"
+            disabled={loading || success}
           >
             {loading ? (
               <>
                 <span style={styles.spinner}></span>
                 Verifying...
               </>
-            ) : 'Verify OTP'}
+            ) : 'Verify Code'}
           </button>
           
           <button
@@ -315,12 +353,13 @@ const OtpForm = ({ phoneNumber, onVerificationSuccess, onBackToPhone }) => {
             style={{
               ...styles.btn,
               ...styles.btnSecondary,
-              ...(loading || timeLeft > 0 ? styles.disabled : {})
+              ...(loading || success || timeLeft > 0 ? styles.disabled : {})
             }}
+            className="otp-btn"
             onClick={handleResend}
-            disabled={loading || timeLeft > 0}
+            disabled={loading || success || timeLeft > 0}
           >
-            {timeLeft > 0 ? `Resend OTP in ${formatTime(timeLeft)}` : 'Resend OTP'}
+            {timeLeft > 0 ? `Resend Code (${timeLeft}s)` : 'Resend Code'}
           </button>
           
           <button
@@ -328,10 +367,11 @@ const OtpForm = ({ phoneNumber, onVerificationSuccess, onBackToPhone }) => {
             style={{
               ...styles.btn,
               ...styles.btnLink,
-              ...(loading ? styles.disabled : {})
+              ...(loading || success ? styles.disabled : {})
             }}
+            className="otp-btn-link"
             onClick={onBackToPhone}
-            disabled={loading}
+            disabled={loading || success}
           >
             Change Phone Number
           </button>

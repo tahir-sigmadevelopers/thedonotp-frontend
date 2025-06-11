@@ -1,5 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { loginUser } from '../services/api';
+
+// Add responsive styles
+const responsiveStyles = `
+  @media (max-width: 640px) {
+    .login-container {
+      padding: 1rem !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      border-radius: 0.5rem !important;
+    }
+    .login-title {
+      font-size: 1.1rem !important;
+    }
+    .login-input {
+      padding: 0.4rem !important;
+      font-size: 0.8rem !important;
+    }
+    .login-button {
+      padding: 0.4rem 0.75rem !important;
+    }
+    .login-form-group {
+      margin-bottom: 0.75rem !important;
+    }
+    .login-label {
+      font-size: 0.8rem !important;
+    }
+  }
+`;
 
 const LoginForm = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -31,6 +60,17 @@ const LoginForm = ({ onLoginSuccess }) => {
     }
   };
 
+  // Add style tag with responsive styles
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = responsiveStyles;
+    document.head.appendChild(styleTag);
+    
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
+
   // Styles
   const styles = {
     container: {
@@ -41,6 +81,8 @@ const LoginForm = ({ onLoginSuccess }) => {
       marginBottom: '1.5rem',
       maxWidth: '400px',
       margin: '0 auto',
+      boxSizing: 'border-box',
+      width: '100%',
     },
     title: {
       fontSize: '1.25rem',
@@ -51,9 +93,11 @@ const LoginForm = ({ onLoginSuccess }) => {
     },
     form: {
       marginBottom: '1rem',
+      width: '100%',
     },
     formGroup: {
       marginBottom: '1rem',
+      width: '100%',
     },
     label: {
       display: 'block',
@@ -69,6 +113,7 @@ const LoginForm = ({ onLoginSuccess }) => {
       border: '1px solid #d1d5db',
       borderRadius: '0.375rem',
       backgroundColor: '#f9fafb',
+      boxSizing: 'border-box',
     },
     button: {
       width: '100%',
@@ -92,16 +137,17 @@ const LoginForm = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Login to Access System</h2>
+    <div style={styles.container} className="login-container">
+      <h2 style={styles.title} className="login-title">Login to Access System</h2>
       
       {error && <div style={styles.error}>{error}</div>}
       
       <form style={styles.form} onSubmit={handleSubmit}>
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="email">Email</label>
+        <div style={styles.formGroup} className="login-form-group">
+          <label style={styles.label} className="login-label" htmlFor="email">Email</label>
           <input
             style={styles.input}
+            className="login-input"
             type="email"
             id="email"
             value={email}
@@ -111,10 +157,11 @@ const LoginForm = ({ onLoginSuccess }) => {
           />
         </div>
         
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="password">Password</label>
+        <div style={styles.formGroup} className="login-form-group">
+          <label style={styles.label} className="login-label" htmlFor="password">Password</label>
           <input
             style={styles.input}
+            className="login-input"
             type="password"
             id="password"
             value={password}
@@ -126,6 +173,7 @@ const LoginForm = ({ onLoginSuccess }) => {
         
         <button 
           style={styles.button} 
+          className="login-button"
           type="submit" 
           disabled={loading}
         >

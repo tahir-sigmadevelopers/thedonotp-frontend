@@ -1,5 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sendOTP } from '../services/api';
+
+// Add responsive styles
+const responsiveStyles = `
+  @media (max-width: 640px) {
+    .phone-card {
+      padding: 1.5rem 1rem !important;
+      border-radius: 0.5rem !important;
+    }
+    .phone-title {
+      font-size: 1.25rem !important;
+      margin-bottom: 1rem !important;
+    }
+    .phone-input {
+      width: 100% !important;
+      padding: 0.6rem 1rem 0.6rem 2.5rem !important;
+      font-size: 0.9rem !important;
+    }
+    .phone-btn-group {
+      flex-direction: column !important;
+      gap: 0.5rem !important;
+    }
+    .phone-btn {
+      padding: 0.6rem !important;
+      font-size: 0.8rem !important;
+    }
+  }
+`;
 
 // Define styles object for inline styling
 const styles = {
@@ -12,6 +39,7 @@ const styles = {
     paddingRight: '4rem',
     width: '100%',
     animation: 'fadeIn 0.5s ease-out',
+    boxSizing: 'border-box',
   },
   title: {
     fontSize: '1.5rem',
@@ -39,6 +67,8 @@ const styles = {
   inputGroup: {
     marginBottom: '1.5rem',
     position: 'relative',
+    width: '100%',
+    boxSizing: 'border-box',
   },
   label: {
     display: 'block',
@@ -49,15 +79,17 @@ const styles = {
   },
   inputWrapper: {
     position: 'relative',
+    width: '100%',
   },
   input: {
-    width: '90%',
+    width: '100%',
     padding: '0.75rem 1rem 0.75rem 2.5rem',
     fontSize: '1rem',
     border: '1px solid #e5e7eb',
     borderRadius: '0.5rem',
     backgroundColor: '#ffffff',
     transition: 'all 0.2s ease',
+    boxSizing: 'border-box',
   },
   inputIcon: {
     position: 'absolute',
@@ -74,6 +106,7 @@ const styles = {
   btnGroup: {
     display: 'flex',
     gap: '0.75rem',
+    width: '100%',
   },
   btn: {
     flex: 1,
@@ -115,6 +148,17 @@ const PhoneForm = ({ onOtpSent }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Add style tag with responsive styles
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = responsiveStyles;
+    document.head.appendChild(styleTag);
+    
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -161,8 +205,8 @@ const PhoneForm = ({ onOtpSent }) => {
   };
 
   return (
-    <div style={styles.card}>
-      <h2 style={styles.title}>Phone Verification</h2>
+    <div style={styles.card} className="phone-card">
+      <h2 style={styles.title} className="phone-title">Phone Verification</h2>
       
       {error && (
         <div style={{
@@ -183,6 +227,7 @@ const PhoneForm = ({ onOtpSent }) => {
               type="tel"
               id="phoneNumber"
               style={styles.input}
+              className="phone-input"
               placeholder="+1 (555) 123-4567"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
@@ -199,7 +244,7 @@ const PhoneForm = ({ onOtpSent }) => {
           </p>
         </div>
         
-        <div style={styles.btnGroup}>
+        <div style={styles.btnGroup} className="phone-btn-group">
           <button
             type="submit"
             style={{
@@ -207,6 +252,7 @@ const PhoneForm = ({ onOtpSent }) => {
               ...styles.btnPrimary,
               ...(loading ? styles.disabled : {})
             }}
+            className="phone-btn"
             disabled={loading}
           >
             {loading ? (
@@ -224,6 +270,7 @@ const PhoneForm = ({ onOtpSent }) => {
               ...styles.btnSecondary,
               ...(loading ? styles.disabled : {})
             }}
+            className="phone-btn"
             onClick={handleResend}
             disabled={loading}
           >

@@ -1,16 +1,55 @@
 import { useState, useEffect } from 'react';
 import { getSMSAnalytics, getDailySMSCount } from '../services/api';
 
+// Add responsive styles
+const responsiveStyles = `
+  @media (max-width: 640px) {
+    .analytics-card {
+      padding: 1rem !important;
+      padding-right: 1rem !important;
+      border-radius: 0.5rem !important;
+      margin-bottom: 1rem !important;
+    }
+    .analytics-title {
+      font-size: 1.25rem !important;
+      margin-bottom: 1rem !important;
+    }
+    .analytics-grid {
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem !important;
+    }
+    .stat-card {
+      padding: 1rem !important;
+    }
+    .stat-title {
+      font-size: 0.8rem !important;
+    }
+    .stat-value {
+      font-size: 1.25rem !important;
+    }
+    .stat-subvalue {
+      font-size: 0.75rem !important;
+    }
+    .table-container {
+      margin-top: 1rem !important;
+    }
+    .table-header, .table-cell {
+      padding: 0.5rem !important;
+      font-size: 0.75rem !important;
+    }
+  }
+`;
+
 // Define styles object for inline styling
 const styles = {
   card: {
     backgroundColor: '#ffffff',
     borderRadius: '0.75rem',
     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    padding: '2rem',
+    padding: '1.5rem',
     width: '100%',
     marginBottom: '2rem',
-    paddingRight: '4rem',
+    boxSizing: 'border-box',
   },
   title: {
     fontSize: '1.5rem',
@@ -21,9 +60,10 @@ const styles = {
   },
   statsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
     gap: '1.5rem',
     marginBottom: '2rem',
+    width: '100%',
   },
   statCard: {
     backgroundColor: '#f9fafb',
@@ -72,10 +112,12 @@ const styles = {
   tableContainer: {
     marginTop: '2rem',
     overflowX: 'auto',
+    width: '100%',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
+    minWidth: '600px',
   },
   tableHeader: {
     backgroundColor: '#f3f4f6',
@@ -105,6 +147,17 @@ const Analytics = () => {
   const [dailyData, setDailyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Add style tag with responsive styles
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = responsiveStyles;
+    document.head.appendChild(styleTag);
+    
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
   
   const fetchData = async () => {
     setLoading(true);
@@ -149,8 +202,8 @@ const Analytics = () => {
   
   return (
     <div>
-      <div style={styles.card}>
-        <h2 style={styles.title}>SMS Analytics Dashboard</h2>
+      <div style={styles.card} className="analytics-card">
+        <h2 style={styles.title} className="analytics-title">SMS Analytics Dashboard</h2>
         
         {loading && <p style={styles.loadingText}>Loading analytics data...</p>}
         
@@ -165,68 +218,68 @@ const Analytics = () => {
         
         {!loading && !error && analytics && (
           <>
-            <div style={styles.statsGrid}>
+            <div style={styles.statsGrid} className="analytics-grid">
               {/* Today's Stats */}
-              <div style={styles.statCard}>
-                <h3 style={styles.statTitle}>Today</h3>
-                <div style={styles.statValue}>{analytics.today.total}</div>
-                <div style={styles.statSubValue}>
+              <div style={styles.statCard} className="stat-card">
+                <h3 style={styles.statTitle} className="stat-title">Today</h3>
+                <div style={styles.statValue} className="stat-value">{analytics.today.total}</div>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   {analytics.today.sent} sent, {analytics.today.failed} failed
                 </div>
-                <div style={styles.statSubValue}>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   Success Rate: {analytics.today.successRate}
                 </div>
               </div>
               
               {/* Last 7 Days Stats */}
-              <div style={styles.statCard}>
-                <h3 style={styles.statTitle}>Last 7 Days</h3>
-                <div style={styles.statValue}>{analytics.last7Days.total}</div>
-                <div style={styles.statSubValue}>
+              <div style={styles.statCard} className="stat-card">
+                <h3 style={styles.statTitle} className="stat-title">Last 7 Days</h3>
+                <div style={styles.statValue} className="stat-value">{analytics.last7Days.total}</div>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   {analytics.last7Days.sent} sent, {analytics.last7Days.failed} failed
                 </div>
-                <div style={styles.statSubValue}>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   Success Rate: {analytics.last7Days.successRate}
                 </div>
               </div>
               
               {/* This Month Stats */}
-              <div style={styles.statCard}>
-                <h3 style={styles.statTitle}>This Month</h3>
-                <div style={styles.statValue}>{analytics.thisMonth.total}</div>
-                <div style={styles.statSubValue}>
+              <div style={styles.statCard} className="stat-card">
+                <h3 style={styles.statTitle} className="stat-title">This Month</h3>
+                <div style={styles.statValue} className="stat-value">{analytics.thisMonth.total}</div>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   {analytics.thisMonth.sent} sent, {analytics.thisMonth.failed} failed
                 </div>
-                <div style={styles.statSubValue}>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   Success Rate: {analytics.thisMonth.successRate}
                 </div>
               </div>
               
               {/* All Time Stats */}
-              <div style={styles.statCard}>
-                <h3 style={styles.statTitle}>All Time</h3>
-                <div style={styles.statValue}>{analytics.allTime.total}</div>
-                <div style={styles.statSubValue}>
+              <div style={styles.statCard} className="stat-card">
+                <h3 style={styles.statTitle} className="stat-title">All Time</h3>
+                <div style={styles.statValue} className="stat-value">{analytics.allTime.total}</div>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   {analytics.allTime.sent} sent, {analytics.allTime.failed} failed
                 </div>
-                <div style={styles.statSubValue}>
+                <div style={styles.statSubValue} className="stat-subvalue">
                   Success Rate: {analytics.allTime.successRate}
                 </div>
               </div>
             </div>
             
             {/* Daily Data Table */}
-            <div style={styles.tableContainer}>
-              <h3 style={styles.title}>Daily SMS Data</h3>
+            <div style={styles.tableContainer} className="table-container">
+              <h3 style={styles.title} className="analytics-title">Daily SMS Data</h3>
               
               <table style={styles.table}>
                 <thead>
                   <tr>
-                    <th style={styles.tableHeader}>Date</th>
-                    <th style={styles.tableHeader}>Total</th>
-                    <th style={styles.tableHeader}>Sent</th>
-                    <th style={styles.tableHeader}>Failed</th>
-                    <th style={styles.tableHeader}>Success Rate</th>
+                    <th style={styles.tableHeader} className="table-header">Date</th>
+                    <th style={styles.tableHeader} className="table-header">Total</th>
+                    <th style={styles.tableHeader} className="table-header">Sent</th>
+                    <th style={styles.tableHeader} className="table-header">Failed</th>
+                    <th style={styles.tableHeader} className="table-header">Success Rate</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -237,23 +290,19 @@ const Analytics = () => {
                     
                     return (
                       <tr key={item.date}>
-                        <td style={styles.tableCell}>
+                        <td style={styles.tableCell} className="table-cell">
                           {new Date(item.date).toLocaleDateString()}
                         </td>
-                        <td style={styles.tableCell}>{item.total}</td>
-                        <td style={{...styles.tableCell, ...styles.tableCellSuccess}}>{item.sent}</td>
-                        <td style={{...styles.tableCell, ...styles.tableCellError}}>{item.failed}</td>
-                        <td style={styles.tableCell}>{successRate}%</td>
+                        <td style={styles.tableCell} className="table-cell">{item.total}</td>
+                        <td style={{...styles.tableCell, ...styles.tableCellSuccess}} className="table-cell">{item.sent}</td>
+                        <td style={{...styles.tableCell, ...styles.tableCellError}} className="table-cell">{item.failed}</td>
+                        <td style={styles.tableCell} className="table-cell">{successRate}%</td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
-            
-            <button style={styles.refreshButton} onClick={fetchData}>
-              Refresh Data
-            </button>
           </>
         )}
       </div>

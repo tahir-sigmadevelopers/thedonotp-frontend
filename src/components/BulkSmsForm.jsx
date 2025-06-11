@@ -1,5 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sendBulkOTP } from '../services/api';
+
+// Add responsive styles
+const responsiveStyles = `
+  @media (max-width: 640px) {
+    .bulk-card {
+      padding: 1rem !important;
+      padding-right: 1rem !important;
+      border-radius: 0.5rem !important;
+    }
+    .bulk-title {
+      font-size: 1.25rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+    .bulk-subtitle {
+      font-size: 0.75rem !important;
+      margin-bottom: 1rem !important;
+    }
+    .bulk-input {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.8rem !important;
+    }
+    .bulk-label {
+      font-size: 0.8rem !important;
+      margin-bottom: 0.25rem !important;
+    }
+    .bulk-btn {
+      padding: 0.6rem !important;
+      font-size: 0.8rem !important;
+    }
+    .bulk-input-group {
+      margin-bottom: 1rem !important;
+    }
+  }
+`;
 
 // Define styles object for inline styling
 const styles = {
@@ -7,10 +41,10 @@ const styles = {
     backgroundColor: '#ffffff',
     borderRadius: '0.75rem',
     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    padding: '2rem',
+    padding: '1.5rem',
     width: '100%',
     animation: 'fadeIn 0.5s ease-out',
-    paddingRight: '4rem',
+    boxSizing: 'border-box',
   },
   title: {
     fontSize: '1.5rem',
@@ -28,6 +62,8 @@ const styles = {
   inputGroup: {
     marginBottom: '1.5rem',
     position: 'relative',
+    width: '100%',
+    boxSizing: 'border-box',
   },
   label: {
     display: 'block',
@@ -43,6 +79,7 @@ const styles = {
     border: '1px solid #e5e7eb',
     borderRadius: '0.5rem',
     backgroundColor: '#ffffff',
+    boxSizing: 'border-box',
   },
   btn: {
     display: 'block',
@@ -55,6 +92,7 @@ const styles = {
     borderRadius: '0.5rem',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    boxSizing: 'border-box',
   },
   btnPrimary: {
     backgroundColor: '#4f46e5',
@@ -79,6 +117,8 @@ const styles = {
     borderRadius: '0.5rem',
     marginBottom: '1.5rem',
     fontSize: '0.875rem',
+    width: '100%',
+    boxSizing: 'border-box',
   },
   alertSuccess: {
     backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -93,12 +133,14 @@ const styles = {
   progressContainer: {
     marginTop: '1rem',
     marginBottom: '1rem',
+    width: '100%',
   },
   progressBar: {
     height: '0.5rem',
     backgroundColor: '#e5e7eb',
     borderRadius: '0.25rem',
     overflow: 'hidden',
+    width: '100%',
   },
   progressFill: {
     height: '100%',
@@ -123,6 +165,17 @@ const BulkSmsForm = () => {
   const [success, setSuccess] = useState('');
   const [progress, setProgress] = useState(0);
   
+  // Add style tag with responsive styles
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = responsiveStyles;
+    document.head.appendChild(styleTag);
+    
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -147,8 +200,6 @@ const BulkSmsForm = () => {
       setError('Please enter at least one valid phone number');
       return;
     }
-    
-    console.log('Parsed phone numbers:', numbers);
 
     setLoading(true);
     setError('');
@@ -174,10 +225,10 @@ const BulkSmsForm = () => {
   };
 
   return (
-    <div style={styles.card}>
-      <h2 style={styles.title}>Bulk OTP Sender</h2>
+    <div style={styles.card} className="bulk-card">
+      <h2 style={styles.title} className="bulk-title">Bulk OTP Sender</h2>
       
-      <p style={styles.subtitle}>
+      <p style={styles.subtitle} className="bulk-subtitle">
         Configure and send OTP messages to multiple phone numbers
       </p>
       
@@ -194,14 +245,15 @@ const BulkSmsForm = () => {
       )}
       
       <form onSubmit={handleSubmit}>
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>
+        <div style={styles.inputGroup} className="bulk-input-group">
+          <label style={styles.label} className="bulk-label">
             Total SMS to Send
           </label>
           <input
             type="number"
             min="1"
             style={styles.input}
+            className="bulk-input"
             value={totalSMS}
             onChange={(e) => setTotalSMS(parseInt(e.target.value) || 0)}
             disabled={loading}
@@ -209,14 +261,15 @@ const BulkSmsForm = () => {
           />
         </div>
         
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>
+        <div style={styles.inputGroup} className="bulk-input-group">
+          <label style={styles.label} className="bulk-label">
             Pause After (messages)
           </label>
           <input
             type="number"
             min="1"
             style={styles.input}
+            className="bulk-input"
             value={pauseAfter}
             onChange={(e) => setPauseAfter(parseInt(e.target.value) || 0)}
             disabled={loading}
@@ -224,14 +277,15 @@ const BulkSmsForm = () => {
           />
         </div>
         
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>
+        <div style={styles.inputGroup} className="bulk-input-group">
+          <label style={styles.label} className="bulk-label">
             Pause Duration (seconds)
           </label>
           <input
             type="number"
             min="1"
             style={styles.input}
+            className="bulk-input"
             value={pauseSeconds}
             onChange={(e) => setPauseSeconds(parseInt(e.target.value) || 0)}
             disabled={loading}
@@ -239,16 +293,17 @@ const BulkSmsForm = () => {
           />
         </div>
         
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>
+        <div style={styles.inputGroup} className="bulk-input-group">
+          <label style={styles.label} className="bulk-label">
             Phone Numbers (one per line)
           </label>
           <textarea
             style={{...styles.input, minHeight: '100px'}}
+            className="bulk-input"
             value={phoneNumbers}
             onChange={(e) => setPhoneNumbers(e.target.value)}
             disabled={loading}
-            placeholder="+1234567890&#10;+9876543210&#10;+1122334455"
+            placeholder="+12345678901&#10;+10987654321&#10;+11122334455"
             required
           />
         </div>
@@ -256,12 +311,7 @@ const BulkSmsForm = () => {
         {loading && (
           <div style={styles.progressContainer}>
             <div style={styles.progressBar}>
-              <div 
-                style={{
-                  ...styles.progressFill,
-                  width: `${progress}%`
-                }}
-              />
+              <div style={{...styles.progressFill, width: `${progress}%`}}></div>
             </div>
             <div style={styles.progressText}>
               {progress}% Complete
@@ -276,12 +326,13 @@ const BulkSmsForm = () => {
             ...styles.btnPrimary,
             ...(loading ? styles.disabled : {})
           }}
+          className="bulk-btn"
           disabled={loading}
         >
           {loading ? (
             <>
               <span style={styles.spinner}></span>
-              Sending...
+              Start Sending
             </>
           ) : 'Start Sending'}
         </button>

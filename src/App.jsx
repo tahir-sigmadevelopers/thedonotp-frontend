@@ -25,6 +25,55 @@ const keyframes = `
       transform: rotate(360deg);
     }
   }
+  
+  /* Responsive styles */
+  @media (max-width: 640px) {
+    .card {
+      padding: 1rem !important;
+      border-radius: 0.5rem !important;
+    }
+    .title {
+      font-size: 1.25rem !important;
+    }
+    .subtitle {
+      font-size: 0.75rem !important;
+      margin-bottom: 1rem !important;
+    }
+    .success-icon {
+      width: 3rem !important;
+      height: 3rem !important;
+      margin: 0 auto 1rem !important;
+    }
+    .icon {
+      width: 1.75rem !important;
+      height: 1.75rem !important;
+    }
+    .button {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.8rem !important;
+      margin-top: 1rem !important;
+    }
+    .nav-container {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+    .nav-button {
+      padding: 0.4rem 0.75rem !important;
+      margin: 0.25rem !important;
+      font-size: 0.8rem !important;
+      width: 100% !important;
+    }
+    .app-container {
+      padding: 0 !important;
+      min-height: 100vh !important;
+    }
+    .card-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0 !important;
+    }
+  }
 `;
 
 // Define styles object for inline styling
@@ -36,10 +85,16 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '2rem 1rem',
+    boxSizing: 'border-box',
+    width: '100%',
+    className: 'app-container',
   },
   cardContainer: {
     width: '100%',
     maxWidth: '800px',
+    padding: '0',
+    boxSizing: 'border-box',
+    className: 'card-container',
   },
   card: {
     backgroundColor: '#ffffff',
@@ -48,6 +103,8 @@ const styles = {
     padding: '2rem',
     width: '100%',
     animation: 'fadeIn 0.5s ease-out',
+    boxSizing: 'border-box',
+    className: 'card',
   },
   textCenter: {
     textAlign: 'center',
@@ -58,12 +115,14 @@ const styles = {
     color: '#1f2937',
     marginBottom: '0.5rem',
     textAlign: 'center',
+    className: 'title',
   },
   subtitle: {
     fontSize: '0.875rem',
     color: '#6b7280',
     marginBottom: '1.5rem',
     textAlign: 'center',
+    className: 'subtitle',
   },
   successIcon: {
     width: '4rem',
@@ -74,11 +133,13 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     margin: '0 auto 1.5rem',
+    className: 'success-icon',
   },
   icon: {
     width: '2.5rem',
     height: '2.5rem',
     stroke: '#10b981',
+    className: 'icon',
   },
   button: {
     display: 'block',
@@ -94,11 +155,13 @@ const styles = {
     marginTop: '1.5rem',
     backgroundColor: '#4f46e5',
     color: 'white',
+    className: 'button',
   },
   navContainer: {
     display: 'flex',
     justifyContent: 'center',
     marginBottom: '1rem',
+    className: 'nav-container',
   },
   navButton: {
     padding: '0.5rem 1rem',
@@ -111,6 +174,7 @@ const styles = {
     color: '#4b5563',
     border: 'none',
     transition: 'all 0.2s ease',
+    className: 'nav-button',
   },
   navButtonActive: {
     backgroundColor: '#4f46e5',
@@ -170,8 +234,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div style={styles.appContainer}>
-        <div style={styles.cardContainer}>
+      <div style={styles.appContainer} className="app-container">
+        <div style={styles.cardContainer} className="card-container">
           {isAuthenticated && <Navbar isAdmin={userData?.role === 'admin'} />}
           
           <Routes>
