@@ -25,6 +25,13 @@ const responsiveStyles = `
       padding: 0.6rem !important;
       font-size: 0.8rem !important;
     }
+    .provider-options {
+      flex-direction: column !important;
+      gap: 0.5rem !important;
+    }
+    .provider-option {
+      padding: 0.5rem !important;
+    }
   }
 `;
 
@@ -34,9 +41,8 @@ const styles = {
     backgroundColor: '#ffffff',
     borderRadius: '0.75rem',
     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    padding: '2rem',
+    padding: '1.5rem',
     paddingBottom: '3rem',
-    paddingRight: '4rem',
     width: '100%',
     animation: 'fadeIn 0.5s ease-out',
     boxSizing: 'border-box',
@@ -142,12 +148,41 @@ const styles = {
     opacity: '0.6',
     cursor: 'not-allowed',
   },
+  providerOptions: {
+    display: 'flex',
+    gap: '1rem',
+    marginBottom: '1.5rem',
+    width: '100%',
+  },
+  providerOption: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.75rem',
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    cursor: 'pointer',
+    flex: 1,
+  },
+  providerOptionSelected: {
+    borderColor: '#4f46e5',
+    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+  },
+  providerIcon: {
+    width: '1.5rem',
+    height: '1.5rem',
+  },
+  providerText: {
+    fontSize: '0.875rem',
+    fontWeight: '500',
+  }
 };
 
 const PhoneForm = ({ onOtpSent }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [provider, setProvider] = useState('twilio'); // Default to Twilio
 
   // Add style tag with responsive styles
   useEffect(() => {
@@ -173,7 +208,7 @@ const PhoneForm = ({ onOtpSent }) => {
     setError('');
     
     try {
-      const response = await sendOTP(phoneNumber);
+      const response = await sendOTP(phoneNumber, provider);
       setLoading(false);
       
       // Call the parent component callback to switch to OTP verification screen
@@ -194,7 +229,7 @@ const PhoneForm = ({ onOtpSent }) => {
     setError('');
     
     try {
-      await sendOTP(phoneNumber);
+      await sendOTP(phoneNumber, provider);
       setLoading(false);
       // Show success message for resend
       setError('OTP resent successfully!');
@@ -218,6 +253,53 @@ const PhoneForm = ({ onOtpSent }) => {
       )}
       
       <form onSubmit={handleSubmit}>
+        <div style={styles.inputGroup}>
+          <label style={styles.label} htmlFor="provider">
+            Select SMS Provider
+          </label>
+          <div 
+            style={styles.providerOptions} 
+            className="provider-options"
+          >
+            <div 
+              style={{
+                ...styles.providerOption,
+                ...(provider === 'twilio' ? styles.providerOptionSelected : {})
+              }}
+              className="provider-option"
+              onClick={() => setProvider('twilio')}
+            >
+              <input 
+                type="radio" 
+                id="twilio" 
+                name="provider" 
+                value="twilio"
+                checked={provider === 'twilio'}
+                onChange={() => setProvider('twilio')}
+              />
+              <label htmlFor="twilio" style={styles.providerText}>Twilio</label>
+            </div>
+            <div 
+              style={{
+                ...styles.providerOption,
+                ...(provider === 'vonage' ? styles.providerOptionSelected : {})
+              }}
+              className="provider-option"
+              onClick={() => setProvider('vonage')}
+            >
+              <input 
+                type="radio" 
+                id="vonage" 
+                name="provider" 
+                value="vonage"
+                checked={provider === 'vonage'}
+                onChange={() => setProvider('vonage')}
+              />
+              <label htmlFor="vonage" style={styles.providerText}>Vonage</label>
+            </div>
+          </div>
+        </div>
+
         <div style={styles.inputGroup}>
           <label style={styles.label} htmlFor="phoneNumber">
             Phone Number

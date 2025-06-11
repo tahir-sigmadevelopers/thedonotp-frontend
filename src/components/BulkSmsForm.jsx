@@ -32,6 +32,13 @@ const responsiveStyles = `
     .bulk-input-group {
       margin-bottom: 1rem !important;
     }
+    .provider-options {
+      flex-direction: column !important;
+      gap: 0.5rem !important;
+    }
+    .provider-option {
+      padding: 0.5rem !important;
+    }
   }
 `;
 
@@ -152,6 +159,30 @@ const styles = {
     color: '#6b7280',
     marginTop: '0.25rem',
     textAlign: 'right',
+  },
+  providerOptions: {
+    display: 'flex',
+    gap: '1rem',
+    marginBottom: '1.5rem',
+    width: '100%',
+  },
+  providerOption: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.75rem',
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    cursor: 'pointer',
+    flex: 1,
+  },
+  providerOptionSelected: {
+    borderColor: '#4f46e5',
+    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+  },
+  providerText: {
+    fontSize: '0.875rem',
+    fontWeight: '500',
   }
 };
 
@@ -164,6 +195,7 @@ const BulkSmsForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [progress, setProgress] = useState(0);
+  const [provider, setProvider] = useState('twilio'); // Default to Twilio
   
   // Add style tag with responsive styles
   useEffect(() => {
@@ -211,7 +243,8 @@ const BulkSmsForm = () => {
         phoneNumbers: numbers,
         totalSMS,
         pauseAfter,
-        pauseSeconds
+        pauseSeconds,
+        provider, // Add the selected provider
       }, (currentProgress) => {
         setProgress(currentProgress);
       });
@@ -245,6 +278,53 @@ const BulkSmsForm = () => {
       )}
       
       <form onSubmit={handleSubmit}>
+        <div style={styles.inputGroup} className="bulk-input-group">
+          <label style={styles.label} className="bulk-label">
+            Select SMS Provider
+          </label>
+          <div 
+            style={styles.providerOptions} 
+            className="provider-options"
+          >
+            <div 
+              style={{
+                ...styles.providerOption,
+                ...(provider === 'twilio' ? styles.providerOptionSelected : {})
+              }}
+              className="provider-option"
+              onClick={() => setProvider('twilio')}
+            >
+              <input 
+                type="radio" 
+                id="bulk-twilio" 
+                name="bulk-provider" 
+                value="twilio"
+                checked={provider === 'twilio'}
+                onChange={() => setProvider('twilio')}
+              />
+              <label htmlFor="bulk-twilio" style={styles.providerText}>Twilio</label>
+            </div>
+            <div 
+              style={{
+                ...styles.providerOption,
+                ...(provider === 'vonage' ? styles.providerOptionSelected : {})
+              }}
+              className="provider-option"
+              onClick={() => setProvider('vonage')}
+            >
+              <input 
+                type="radio" 
+                id="bulk-vonage" 
+                name="bulk-provider" 
+                value="vonage"
+                checked={provider === 'vonage'}
+                onChange={() => setProvider('vonage')}
+              />
+              <label htmlFor="bulk-vonage" style={styles.providerText}>Vonage</label>
+            </div>
+          </div>
+        </div>
+
         <div style={styles.inputGroup} className="bulk-input-group">
           <label style={styles.label} className="bulk-label">
             Total SMS to Send

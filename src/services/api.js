@@ -41,9 +41,9 @@ api.interceptors.response.use(
 );
 
 // Send OTP to phone number
-export const sendOTP = async (phoneNumber) => {
+export const sendOTP = async (phoneNumber, provider = 'twilio') => {
   try {
-    const response = await api.post('/otp/send', { phoneNumber });
+    const response = await api.post('/otp/send', { phoneNumber, provider });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -71,7 +71,13 @@ export const sendBulkOTP = async (bulkData, progressCallback) => {
       throw new Error('Phone numbers must be an array');
     }
     
-    const response = await api.post('/otp/bulk-send', bulkData, {
+    // Default provider is twilio if not specified
+    const dataWithProvider = {
+      ...bulkData,
+      provider: bulkData.provider || 'twilio'
+    };
+    
+    const response = await api.post('/otp/bulk-send', dataWithProvider, {
       onUploadProgress: (progressEvent) => {
         // This won't actually track the SMS sending progress, just the upload
         // The actual progress will be tracked via server-sent events or polling
